@@ -48,4 +48,38 @@ app.MapPost("/habits", async (HabitCreateDto dto, ClarityHabitsDbContext db) =>
     return Results.Created($"/habits/{habit.Id}", habit);
 });
 
+app.MapPut("/habits/{id:guid}", async (
+    Guid id,
+    HabitUpdateDto dto,
+    ClarityHabitsDbContext db) =>
+{
+    var habit = await db.Habits.FindAsync(id);
+
+    if (habit is null)
+        return Results.NotFound();
+
+    habit.Name = dto.Name;
+    habit.GroupName = dto.GroupName;
+    habit.Frequency = dto.Frequency;
+    habit.SortOrder = dto.SortOrder;
+    habit.IsArchived = dto.IsArchived;
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(habit);
+});
+
+app.MapDelete("/habits/{id:guid}", async (Guid id, ClarityHabitsDbContext db) =>
+{
+    var habit = await db.Habits.FindAsync(id);
+
+    if (habit is null)
+        return Results.NotFound();
+
+    db.Habits.Remove(habit);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent(); // 204 No Content
+});
+
 app.Run();
