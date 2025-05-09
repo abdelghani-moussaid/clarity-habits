@@ -88,5 +88,47 @@ public static class HabitEndpoints
 
             return Results.Ok("Habit marked as complete for today.");
         });
+
+        app.MapGet("/habits/{id:guid}/completions", async (Guid id, ClarityHabitsDbContext db) =>
+        {
+            var habitExists = await db.Habits.AnyAsync(h => h.Id == id);
+            if (!habitExists)
+                return Results.NotFound();
+
+            var completions = await db.HabitCompletions
+                .Where(c => c.HabitId == id)
+                .OrderByDescending(c => c.CompletionDate)
+                .ToListAsync();
+
+            return Results.Ok(completions);
+        });
+
+        app.MapGet("/habits/today", async (ClarityHabitsDbContext db) =>
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var habitsWithToday = await db.Habits
+                .Include(h => h.Completions.Where(c => c.CompletionDate == today))
+                .ToListAsync();
+
+            var grouped = habitsWithToday
+                .GroupBy(h => h.GroupName ?? "Ungrouped")
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(h => new
+                    {
+                        h.Id,
+                        h.Name,
+                        h.Frequency,
+                        h.SortOrder,
+                        h.IsArchived,
+                        CompletedToday = h.Completions.Any()
+                    })
+                    .OrderBy(h => h.SortOrder)
+                    .ToList()
+                );
+
+            return Results.Ok(grouped);
+        });
     }
 }
