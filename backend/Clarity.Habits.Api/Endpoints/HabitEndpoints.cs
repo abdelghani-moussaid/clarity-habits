@@ -60,5 +60,33 @@ public static class HabitEndpoints
 
             return Results.NoContent();
         });
+
+        app.MapPost("/habits/{id:guid}/complete", async (Guid id, ClarityHabitsDbContext db) =>
+        {
+            var habit = await db.Habits.FindAsync(id);
+            if (habit is null)
+                return Results.NotFound();
+
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Prevent duplicate completion
+            var alreadyCompleted = await db.HabitCompletions
+                .AnyAsync(c => c.HabitId == id && c.CompletionDate == today);
+
+            if (alreadyCompleted)
+                return Results.BadRequest("Habit already completed for today.");
+
+            var completion = new HabitCompletion
+            {
+                Id = Guid.NewGuid(),
+                HabitId = id,
+                CompletionDate = today
+            };
+
+            db.HabitCompletions.Add(completion);
+            await db.SaveChangesAsync();
+
+            return Results.Ok("Habit marked as complete for today.");
+        });
     }
 }
