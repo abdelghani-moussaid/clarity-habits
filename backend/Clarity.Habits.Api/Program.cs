@@ -28,7 +28,13 @@ var app = builder.Build();
 
 if (!app.Environment.IsProduction())
 {
-    app.UseHttpsRedirection();
+    builder.WebHost.ConfigureKestrel(serverOptions =>
+    {
+        serverOptions.ConfigureHttpsDefaults(options =>
+        {
+            options.SslProtocols = System.Security.Authentication.SslProtocols.None;
+        });
+    });
 }
 
 // Configure middleware
