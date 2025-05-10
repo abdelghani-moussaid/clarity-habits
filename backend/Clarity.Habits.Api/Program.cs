@@ -4,6 +4,7 @@ using Clarity.Habits.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Register services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,6 +24,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 // Configure middleware
 if (app.Environment.IsDevelopment())
