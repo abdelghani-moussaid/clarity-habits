@@ -34,7 +34,7 @@ export function TodayPage() {
   }
 
   return (
-    <div className="max-w-2xl p-6 mx-auto space-y-6">
+    <div className="max-w-4xl p-6 mx-auto space-y-6">
         <div className="p-6 space-y-6">
             <div className="mb-6 space-y-1">
                 <h1 className="text-3xl font-bold">{getGreeting()}</h1>
@@ -51,7 +51,7 @@ export function TodayPage() {
                   .map((habit) => (
                     <Card key={habit.id}>
                       <CardContent className="flex items-center justify-between px-3 py-4">
-                        <span className={habit.completedToday ? "border border-green-400 text-green-700 rounded-full px-3 py-1 text-sm" : ""}>
+                        <span className={habit.completedToday ? "text-green-600 bg-green-50 rounded px-2 py-1 text-sm" : ""}>
                           {habit.name}
                         </span>
 

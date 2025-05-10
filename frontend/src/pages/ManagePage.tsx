@@ -81,7 +81,7 @@ export function ManagePage() {
   }
 
   return (
-    <div className="max-w-xl px-4 py-6 mx-auto space-y-6">
+    <div className="w-full max-w-4xl px-4 py-6 mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Manage Habits</h1>
 
       {/* Create Form */}
