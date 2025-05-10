@@ -34,41 +34,45 @@ export function TodayPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-6">
+    <div className="max-w-2xl p-6 mx-auto space-y-6">
         <div className="p-6 space-y-6">
-            <div className="space-y-1 mb-6">
+            <div className="mb-6 space-y-1">
                 <h1 className="text-3xl font-bold">{getGreeting()}</h1>
-                <p className="text-muted-foreground text-sm">Here’s your habit checklist for today</p>
+                <p className="text-sm text-muted-foreground">Here’s your habit checklist for today</p>
             </div>
 
             {Object.entries(data).map(([group, habits]) => (
-                <div key={group} className="mb-6 space-y-2">
-                    <h2 className="text-xl font-semibold text-muted-foreground">
-                        {group.charAt(0).toUpperCase() + group.slice(1)}
-                    </h2>
-                    {habits.map((habit) => (
+              <div key={group} className="space-y-2">
+                <h2 className="text-lg font-semibold text-muted-foreground">
+                  {group.charAt(0).toUpperCase() + group.slice(1)}
+                </h2>
+                {habits
+                  .sort((a, b) => Number(a.completedToday) - Number(b.completedToday)) // ✅ Sort by completion
+                  .map((habit) => (
                     <Card key={habit.id}>
-                        <CardContent className="flex items-center justify-between py-4 px-3">
-                        <span className={habit.completedToday ? "text-gray-500 line-through" : ""}>
-                            {habit.name}
+                      <CardContent className="flex items-center justify-between px-3 py-4">
+                        <span className={habit.completedToday ? "border border-green-400 text-green-700 rounded-full px-3 py-1 text-sm" : ""}>
+                          {habit.name}
                         </span>
 
                         {habit.completedToday ? (
-                            <Check className="text-green-600" size={20} />
+                          <div className="p-1 bg-green-100 rounded-full">
+                            <Check className="w-4 h-4 text-green-600" />
+                          </div>
                         ) : (
-                            <Button
+                          <Button
                             variant="outline"
-                            size="sm"
+                            size="icon"
                             onClick={() => completeHabit(habit.id)}
-                            >
-                            Mark as done
-                            </Button>
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
                         )}
-                        </CardContent>
+                      </CardContent>
                     </Card>
-                    ))}
-                </div>
-                ))}
+                  ))}
+              </div>
+            ))}
         </div>
     </div>
     

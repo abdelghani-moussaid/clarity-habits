@@ -1,10 +1,10 @@
-import { TodayPage } from "./pages/TodayPage";
-// import { ManagePage } from "./pages/ManagePage";
+// import { TodayPage } from "./pages/TodayPage";
+import { ManagePage } from "./pages/ManagePage";
 
 
 function App() {
-  // return <ManagePage />; 
-  return <TodayPage />;
+  return <ManagePage />; 
+  // return <TodayPage />;
 }
 
 export default App;
