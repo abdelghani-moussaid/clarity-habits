@@ -130,5 +130,16 @@ public static class HabitEndpoints
 
             return Results.Ok(grouped);
         });
+
+        app.MapPut("/habits/{id:guid}/archive", async (Guid id, ClarityHabitsDbContext db) =>
+        {
+            var habit = await db.Habits.FindAsync(id);
+            if (habit is null) return Results.NotFound();
+
+            habit.IsArchived = true;
+            await db.SaveChangesAsync();
+
+            return Results.Ok();
+        });
     }
 }
