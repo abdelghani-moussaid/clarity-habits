@@ -9,6 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+if (builder.Environment.IsProduction())
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(int.Parse(Environment.GetEnvironmentVariable("PORT") ?? "8080" );
+    });
+}
+
 // Register DbContext
 builder.Services.AddDbContext<ClarityHabitsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -25,17 +33,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-
-if (!app.Environment.IsProduction())
-{
-    builder.WebHost.ConfigureKestrel(serverOptions =>
-    {
-        serverOptions.ConfigureHttpsDefaults(options =>
-        {
-            options.SslProtocols = System.Security.Authentication.SslProtocols.None;
-        });
-    });
-}
 
 // Configure middleware
 if (app.Environment.IsDevelopment())
