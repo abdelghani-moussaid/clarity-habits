@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Pencil, Archive, Trash2, Save, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Habit = {
   id: string;
@@ -13,6 +14,7 @@ type Habit = {
 };
 
 export function ManagePage() {
+  const { t } = useTranslation();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [form, setForm] = useState({
     name: "",
@@ -82,35 +84,35 @@ export function ManagePage() {
 
   return (
     <div className="w-full max-w-4xl px-4 py-6 mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Manage Habits</h1>
+      <h1 className="text-2xl font-bold">{t("manageHabits")}</h1>
 
       {/* Create Form */}
       <div className="space-y-2">
-        <Input placeholder="Habit name" name="name" value={form.name} onChange={handleChange} />
-        <Input placeholder="Group (e.g., Morning)" name="groupName" value={form.groupName} onChange={handleChange} />
+        <Input placeholder={t("habitName")} name="name" value={form.name} onChange={handleChange} />
+        <Input placeholder={t("groupInput")} name="groupName" value={form.groupName} onChange={handleChange} />
         <select
           name="frequency"
           value={form.frequency}
           onChange={handleChange}
           className="w-full px-2 py-1 text-sm border rounded"
         >
-          <option value="Daily">Daily</option>
-          <option value="Weekly">Weekly</option>
+          <option value="Daily">{t("daily")}</option>
+          <option value="Weekly">{t("weekly")}</option>
         </select>
-        <Button className="w-full" onClick={addHabit}>
-          Add Habit
+        <Button className="w-full text-white bg-sky-600 hover:bg-sky-700" onClick={addHabit}>
+          {t("addHabit")} 
         </Button>
       </div>
 
       {/* Habit Lists */}
       {["active", "archived"].map((section) => (
         <div key={section}>
-          <h2 className="mt-6 text-lg font-semibold capitalize text-muted-foreground">
-            {section} Habits
+          <h2 className="mt-6 text-lg font-semibold capitalize text-slate-500">
+            {t("sectionHabits", { section: t(section) })}
           </h2>
-          <div className="mt-2 space-y-4">
+          <div className="mt-2 space-y-4 transition-all duration-150 hover:shadow-md">
             {grouped[section as keyof typeof grouped].map((habit) => (
-              <Card key={habit.id}>
+              <Card key={habit.id}  className="bg-white border shadow rounded-xl">
                 <CardContent className="flex items-center justify-between px-4 py-4">
                   {editId === habit.id ? (
                     <div className="w-full space-y-2">
@@ -130,15 +132,15 @@ export function ManagePage() {
                         onChange={(e) => setEditForm({ ...editForm, frequency: e.target.value })}
                         className="w-full px-2 py-1 text-sm border rounded"
                       >
-                        <option value="Daily">Daily</option>
-                        <option value="Weekly">Weekly</option>
+                        <option value="Daily">{t("daily")}</option>
+                        <option value="Weekly">{t("weekly")}</option>
                       </select>
                       <div className="flex gap-2">
-                        <Button size="sm" onClick={() => saveEdit(habit.id)}>
-                          <Save className="w-4 h-4 mr-1" /> Save
+                        <Button size="sm"  className="text-white bg-sky-600 hover:bg-sky-700" onClick={() => saveEdit(habit.id)}>
+                          <Save className="w-4 h-4 mr-1" /> {t("save")}
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setEditId(null)}>
-                          <X className="w-4 h-4 mr-1" /> Cancel
+                        <Button variant="ghost" size="sm" className="text-white bg-red-600 hover:bg-red-700" onClick={() => setEditId(null)}>
+                          <X className="w-4 h-4 mr-1" /> {t("cancel")}
                         </Button>
                       </div>
                     </div>
@@ -146,19 +148,19 @@ export function ManagePage() {
                     <>
                       <div>
                         <p className="font-medium">{habit.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {habit.groupName || "No group"} • {habit.frequency}
+                        <p className="text-sm text-slate-500">
+                          {habit.groupName || "No group"} • {t(habit.frequency.toLowerCase())}
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="icon" onClick={() => startEdit(habit)}>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" className="hover:bg-slate-100" size="icon" onClick={() => startEdit(habit)}>
                           <Pencil className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => archiveHabit(habit.id)}>
+                        <Button variant="ghost" className="hover:bg-slate-100" size="icon" onClick={() => archiveHabit(habit.id)}>
                           <Archive className="w-4 h-4 text-orange-500" />
                         </Button>
                         {habit.isArchived && (
-                          <Button variant="ghost" size="icon" onClick={() => deleteHabit(habit.id)}>
+                          <Button variant="ghost" className="hover:bg-slate-100" size="icon" onClick={() => deleteHabit(habit.id)}>
                             <Trash2 className="w-4 h-4 text-red-600" />
                           </Button>
                         )}
